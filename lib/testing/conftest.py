@@ -1,9 +1,14 @@
-#!/usr/bin/env python3
+# tests/conftest.py
 
-def pytest_itemcollected(item):
-    par = item.parent.obj
-    node = item.obj
-    pref = par.__doc__.strip() if par.__doc__ else par.__class__.__name__
-    suf = node.__doc__.strip() if node.__doc__ else node.__name__
-    if pref or suf:
-        item._nodeid = ' '.join((pref, suf))
+import pytest
+import sqlite3
+
+@pytest.fixture
+def db_connection():
+    connection = sqlite3.connect(':memory:')
+    yield connection
+    connection.close()
+
+@pytest.fixture
+def db_cursor(db_connection):
+    return db_connection.cursor()
